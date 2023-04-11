@@ -6,15 +6,15 @@ public class HeapNode implements Comparable<HeapNode> {
     RedBlackTreeNode rBTPtr;
 
     @Override
-    public int compareTo(HeapNode hn){
-        if(this.rideCost == hn.rideCost)
+    public int compareTo(HeapNode hn) {
+        if (this.rideCost == hn.rideCost)
             return this.tripDuration - hn.tripDuration;
         else
             return this.rideCost - hn.rideCost;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Ride - [No: " + rideNumber + " Cost: " + rideCost + " Duration: " + tripDuration + "]";
     }
 }

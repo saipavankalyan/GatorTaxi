@@ -1,4 +1,4 @@
-public class RedBlackTreeNode implements Comparable<RedBlackTreeNode>{
+public class RedBlackTreeNode implements Comparable<RedBlackTreeNode> {
     int rideNumber;
     int rideCost;
     int tripDuration;
@@ -10,20 +10,17 @@ public class RedBlackTreeNode implements Comparable<RedBlackTreeNode>{
     HeapNode heapNodePtr;
 
     @Override
-    public String toString(){
-        return "Ride - [No: " + rideNumber + " Cost: " + rideCost + " Duration: " + tripDuration + "]";
+    public String toString() {
+        return String.format("Ride - [No: %d Cost: %d Duration: %d]", rideNumber, rideCost, tripDuration);
     }
-    
-    boolean isLeftChild(){
+
+    boolean isLeftChild() {
         return this.parent != null && this == this.parent.left;
     }
 
     @Override
-    public int compareTo(RedBlackTreeNode rbt){
+    public int compareTo(RedBlackTreeNode rbt) {
         return this.rideNumber - rbt.rideNumber;
     }
-    
-
-
 
 }
