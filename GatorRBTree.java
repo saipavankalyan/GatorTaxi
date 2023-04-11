@@ -213,7 +213,7 @@ public class GatorRBTree {
     void handleDoubleBlack(RedBlackTreeNode node) {
         if (node.parent == null) {
             if (root != node) {
-                ///////////////////// TODO
+                
             }
 
             node.isDeletedBlack = false;
