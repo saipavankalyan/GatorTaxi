@@ -9,6 +9,22 @@ public class RedBlackTreeNode implements Comparable<RedBlackTreeNode> {
     RedBlackTreeNode right;
     HeapNode heapNodePtr;
 
+    public RedBlackTreeNode(){
+
+    }
+
+    public RedBlackTreeNode(int rideNumber, int rideCost, int tripDuration){
+        this.rideNumber = rideNumber;
+        this.rideCost = rideCost;
+        this.tripDuration = tripDuration;
+        isRed = true;
+        isDeletedBlack = false;
+        parent = null;
+        left = null;
+        right = null;
+        heapNodePtr = null;
+    }
+
     @Override
     public String toString() {
         return String.format("Ride - [No: %d Cost: %d Duration: %d]", rideNumber, rideCost, tripDuration);
