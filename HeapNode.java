@@ -5,11 +5,11 @@ public class HeapNode implements Comparable<HeapNode> {
     int index;
     RedBlackTreeNode rBTPtr;
 
-    public HeapNode(){
+    public HeapNode() {
 
     }
-    
-    public HeapNode(int rideNumber, int rideCost, int tripDuration){
+
+    public HeapNode(int rideNumber, int rideCost, int tripDuration) {
         this.rideNumber = rideNumber;
         this.rideCost = rideCost;
         this.tripDuration = tripDuration;
@@ -20,9 +20,9 @@ public class HeapNode implements Comparable<HeapNode> {
     @Override
     public int compareTo(HeapNode hn) {
         if (this.rideCost == hn.rideCost)
-            return this.tripDuration - hn.tripDuration;
+            return (this.tripDuration - hn.tripDuration);
         else
-            return this.rideCost - hn.rideCost;
+            return (this.rideCost - hn.rideCost);
     }
 
     @Override

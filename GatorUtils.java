@@ -1,5 +1,5 @@
 public class GatorUtils {
-    public static void copyNode(RedBlackTreeNode dup, RedBlackTreeNode orig) {
+    public static void assignRBTNode(RedBlackTreeNode dup, RedBlackTreeNode orig) {
         dup.rideCost = orig.rideCost;
         dup.rideNumber = orig.rideNumber;
         dup.tripDuration = orig.tripDuration;
@@ -7,7 +7,5 @@ public class GatorUtils {
 
         if (dup.heapNodePtr != null)
             dup.heapNodePtr.rBTPtr = dup;
-
-        assert (dup.heapNodePtr == orig.heapNodePtr);
     }
 }

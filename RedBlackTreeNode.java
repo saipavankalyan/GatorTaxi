@@ -3,22 +3,22 @@ public class RedBlackTreeNode implements Comparable<RedBlackTreeNode> {
     int rideCost;
     int tripDuration;
     boolean isRed;
-    boolean isDeletedBlack;
+    boolean isDblack;
     RedBlackTreeNode parent;
     RedBlackTreeNode left;
     RedBlackTreeNode right;
     HeapNode heapNodePtr;
 
-    public RedBlackTreeNode(){
+    public RedBlackTreeNode() {
 
     }
 
-    public RedBlackTreeNode(int rideNumber, int rideCost, int tripDuration){
+    public RedBlackTreeNode(int rideNumber, int rideCost, int tripDuration) {
         this.rideNumber = rideNumber;
         this.rideCost = rideCost;
         this.tripDuration = tripDuration;
         isRed = true;
-        isDeletedBlack = false;
+        isDblack = false;
         parent = null;
         left = null;
         right = null;

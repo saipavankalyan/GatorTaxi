@@ -5,32 +5,32 @@ public class GatorRBTree {
     RedBlackTreeNode root;
 
     public GatorRBTree() {
-        root = new RedBlackTreeNode();
+        root = null;
     }
 
-    RedBlackTreeNode insertUnbalanced(RedBlackTreeNode root, RedBlackTreeNode newNode) {
+    RedBlackTreeNode insertPreBalancing(RedBlackTreeNode root, RedBlackTreeNode newNode) {
         if (root == null)
             return newNode;
 
         if (newNode.compareTo(root) < 0) {
-            root.left = insertUnbalanced(root.left, newNode);
+            root.left = insertPreBalancing(root.left, newNode);
             root.left.parent = root;
         }
 
         else {
-            root.right = insertUnbalanced(root.right, newNode);
+            root.right = insertPreBalancing(root.right, newNode);
             root.right.parent = root;
         }
 
         return root;
     }
 
-    void handleimbalanceColor(RedBlackTreeNode grandParent, RedBlackTreeNode uncle, RedBlackTreeNode parent) {
+    void handleColorChange(RedBlackTreeNode grandParent, RedBlackTreeNode uncle, RedBlackTreeNode parent) {
         grandParent.isRed = !grandParent.isRed;
         uncle.isRed = !uncle.isRed;
         parent.isRed = !parent.isRed;
 
-        handleInsertImbalance(grandParent);
+        handleInsertWithBalance(grandParent);
     }
 
     void rotateLeft(RedBlackTreeNode node) {
@@ -42,17 +42,15 @@ public class GatorRBTree {
         }
 
         right.left = node;
-        RedBlackTreeNode nodeParent = node.parent;
-        right.parent = nodeParent;
+        RedBlackTreeNode parent = node.parent;
+        right.parent = parent;
 
         if (node == root)
             root = right;
-
         else if (node.isLeftChild())
-            nodeParent.left = right;
-
+            parent.left = right;
         else
-            nodeParent.right = right;
+            parent.right = right;
 
         node.parent = right;
     }
@@ -65,20 +63,20 @@ public class GatorRBTree {
             node.left.parent = node;
 
         left.right = node;
-        RedBlackTreeNode nodeParent = node.parent;
-        left.parent = nodeParent;
+        RedBlackTreeNode parent = node.parent;
+        left.parent = parent;
 
-        if (nodeParent != null)
+        if (parent == null)
             root = left;
         else if (node.isLeftChild())
-            nodeParent.left = left;
+            parent.left = left;
         else
-            nodeParent.right = left;
+            parent.right = left;
 
         node.parent = left;
     }
 
-    void handleLXb(RedBlackTreeNode node, RedBlackTreeNode parent, RedBlackTreeNode grandParent) {
+    void balanceLeftX(RedBlackTreeNode node, RedBlackTreeNode parent, RedBlackTreeNode grandParent) {
         if (!node.isLeftChild())
             rotateLeft(parent);
 
@@ -88,12 +86,12 @@ public class GatorRBTree {
         rotateRight(grandParent);
 
         if (node.isLeftChild())
-            handleInsertImbalance(parent);
+            handleInsertWithBalance(parent);
         else
-            handleInsertImbalance(grandParent);
+            handleInsertWithBalance(grandParent);
     }
 
-    void handleRXb(RedBlackTreeNode node, RedBlackTreeNode parent, RedBlackTreeNode grandParent) {
+    void balanceRightX(RedBlackTreeNode node, RedBlackTreeNode parent, RedBlackTreeNode grandParent) {
         if (node.isLeftChild())
             rotateRight(parent);
 
@@ -103,12 +101,12 @@ public class GatorRBTree {
         rotateLeft(grandParent);
 
         if (!node.isLeftChild())
-            handleInsertImbalance(parent);
+            handleInsertWithBalance(parent);
         else
-            handleInsertImbalance(grandParent);
+            handleInsertWithBalance(grandParent);
     }
 
-    void handleInsertImbalance(RedBlackTreeNode node) {
+    void handleInsertWithBalance(RedBlackTreeNode node) {
         if (node == root)
             root.isRed = false;
 
@@ -117,7 +115,6 @@ public class GatorRBTree {
 
             if (!parent.isRed) {
                 root.isRed = false;
-                return;
             }
 
             else {
@@ -130,13 +127,13 @@ public class GatorRBTree {
                     uncle = grandParent.left;
 
                 if (uncle != null && uncle.isRed)
-                    handleimbalanceColor(grandParent, uncle, parent);
+                    handleColorChange(grandParent, uncle, parent);
 
                 else if (parent.isLeftChild())
-                    handleLXb(node, parent, grandParent);
+                    balanceLeftX(node, parent, grandParent);
 
                 else if (!parent.isLeftChild())
-                    handleRXb(node, parent, grandParent);
+                    balanceRightX(node, parent, grandParent);
 
                 root.isRed = false;
             }
@@ -144,9 +141,9 @@ public class GatorRBTree {
     }
 
     RedBlackTreeNode insert(RedBlackTreeNode node) {
-        root = insertUnbalanced(root, node);
+        root = insertPreBalancing(root, node);
 
-        handleInsertImbalance(node);
+        handleInsertWithBalance(node);
 
         return node;
     }
@@ -168,12 +165,12 @@ public class GatorRBTree {
         return searchRecursive(root, rideNumber);
     }
 
-    void getAllInRangeRecursive(RedBlackTreeNode node, int low, int high, List<RedBlackTreeNode> acc) {
+    void getValuesInRangeRecursive(RedBlackTreeNode node, int low, int high, List<RedBlackTreeNode> acc) {
         if (node == null)
             return;
 
         if (low <= node.rideNumber)
-            getAllInRangeRecursive(node.left, low, high, acc);
+            getValuesInRangeRecursive(node.left, low, high, acc);
 
         if (node.rideNumber >= low && node.rideNumber <= high)
             acc.add(node);
@@ -181,18 +178,18 @@ public class GatorRBTree {
         else if (node.rideNumber > high)
             return;
 
-        getAllInRangeRecursive(node.right, low, high, acc);
+        getValuesInRangeRecursive(node.right, low, high, acc);
     }
 
-    List<RedBlackTreeNode> getAllInRange(int low, int high) {
+    List<RedBlackTreeNode> getValuesInRange(int low, int high) {
         List<RedBlackTreeNode> acc = new ArrayList<>();
 
-        getAllInRangeRecursive(root, low, high, acc);
+        getValuesInRangeRecursive(root, low, high, acc);
 
         return acc;
     }
 
-    RedBlackTreeNode findMin(RedBlackTreeNode node) {
+    RedBlackTreeNode findMinimum(RedBlackTreeNode node) {
         RedBlackTreeNode curr = node;
 
         while (curr.left != null)
@@ -210,13 +207,9 @@ public class GatorRBTree {
             return parent.left;
     }
 
-    void handleDoubleBlack(RedBlackTreeNode node) {
+    void handleDbAfterDeletion(RedBlackTreeNode node) {
         if (node.parent == null) {
-            if (root != node) {
-                
-            }
-
-            node.isDeletedBlack = false;
+            node.isDblack = false;
             return;
         }
 
@@ -225,37 +218,37 @@ public class GatorRBTree {
 
         boolean temp;
 
-        boolean sibLeftRed;
-        boolean sibRightRed;
+        boolean isSibLeftChildRed;
+        boolean isSibRightChildRed;
 
         if (sibling.left != null)
-            sibLeftRed = sibling.left.isRed;
+            isSibLeftChildRed = sibling.left.isRed;
         else
-            sibLeftRed = false;
+            isSibLeftChildRed = false;
 
         if (sibling.right != null)
-            sibRightRed = sibling.right.isRed;
+            isSibRightChildRed = sibling.right.isRed;
         else
-            sibRightRed = false;
+            isSibRightChildRed = false;
 
-        boolean nearestChildRed;
-        boolean farthestChildRed;
+        boolean nearSibChildRed;
+        boolean farSibChildRed;
 
-        nearestChildRed = node.isLeftChild() ? sibLeftRed : sibRightRed;
-        farthestChildRed = node.isLeftChild() ? sibRightRed : sibLeftRed;
+        nearSibChildRed = node.isLeftChild() ? isSibLeftChildRed : isSibRightChildRed;
+        farSibChildRed = node.isLeftChild() ? isSibRightChildRed : isSibLeftChildRed;
 
-        if ((!sibling.isRed) && (!sibLeftRed) && (!sibRightRed)) {
-            node.isDeletedBlack = false;
+        if ((!sibling.isRed) && (!isSibLeftChildRed) && (!isSibRightChildRed)) {
+            node.isDblack = false;
 
             if (parent.isRed)
                 parent.isRed = false;
             else
-                parent.isDeletedBlack = true;
+                parent.isDblack = true;
 
             sibling.isRed = true;
 
-            if (parent.isDeletedBlack)
-                handleDoubleBlack(parent);
+            if (parent.isDblack)
+                handleDbAfterDeletion(parent);
         }
 
         else if (sibling.isRed) {
@@ -268,10 +261,10 @@ public class GatorRBTree {
             else
                 rotateRight(parent);
 
-            handleDoubleBlack(node);
+            handleDbAfterDeletion(node);
         }
 
-        else if (nearestChildRed && !sibling.isRed) {
+        else if (nearSibChildRed && !sibling.isRed) {
             RedBlackTreeNode nearChild = node.isLeftChild() ? sibling.left : sibling.right;
 
             temp = sibling.isRed;
@@ -283,10 +276,10 @@ public class GatorRBTree {
             else
                 rotateLeft(sibling);
 
-            handleDoubleBlack(node);
+            handleDbAfterDeletion(node);
         }
 
-        else if (farthestChildRed && !sibling.isRed) {
+        else if (farSibChildRed && !sibling.isRed) {
             RedBlackTreeNode farthestChild = node.isLeftChild() ? sibling.right : sibling.left;
 
             temp = parent.isRed;
@@ -298,13 +291,13 @@ public class GatorRBTree {
             else
                 rotateRight(parent);
 
-            node.isDeletedBlack = false;
+            node.isDblack = false;
 
             farthestChild.isRed = false;
         }
     }
 
-    void hardDelete(RedBlackTreeNode node) {
+    void deleteNode(RedBlackTreeNode node) {
         if (node.parent == null)
             root = null;
 
@@ -320,28 +313,29 @@ public class GatorRBTree {
 
         // both children
         if (node.left != null && node.right != null) {
-            RedBlackTreeNode rightMinNode = findMin(node.right);
+            RedBlackTreeNode successor = findMinimum(node.right);
 
-            GatorUtils.copyNode(node, rightMinNode);
+            GatorUtils.assignRBTNode(node, successor);
 
-            delete(rightMinNode);
+            delete(successor);
         }
 
         else if (node.left != null || node.right != null) {
-            RedBlackTreeNode nextNode = node.left != null ? node.left : node.right;
+            RedBlackTreeNode successor = node.left != null ? node.left : node.right;
 
-            GatorUtils.copyNode(node, nextNode);
+            GatorUtils.assignRBTNode(node, successor);
 
-            delete(nextNode);
+            delete(successor);
         }
 
         else {
-            if (node.isRed)
-                hardDelete(node);
-            else
-                node.isDeletedBlack = true;
-            handleDoubleBlack(node);
-            hardDelete(node);
+            if (node.isRed) {
+                deleteNode(node);
+            } else {
+                node.isDblack = true;
+                handleDbAfterDeletion(node);
+                deleteNode(node);
+            }
         }
     }
 }

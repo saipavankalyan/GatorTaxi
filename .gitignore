@@ -1,2 +1,3 @@
 *.class
 testcase*.txt
+output_file.txt

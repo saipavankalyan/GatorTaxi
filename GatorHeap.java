@@ -7,14 +7,13 @@ public class GatorHeap {
         elementCount = 0;
     }
 
-    void swap(HeapNode a, HeapNode b) {
-        HeapNode temp;
-        temp = a;
-        a = b;
-        b = temp;
+    void swap(int a_index, int b_index, HeapNode[] heapArr) {
+        HeapNode temp = heapArr[b_index];
+        heapArr[b_index] = heapArr[a_index];
+        heapArr[a_index] = temp;
     }
 
-    void heapifyUpward(int parent) {
+    void heapifyUp(int parent) {
         // parent is the index of the parent node
 
         int left = 2 * parent + 1;
@@ -26,39 +25,33 @@ public class GatorHeap {
         if (left < elementCount && right >= elementCount) {
             if (heapArray[parent].compareTo(heapArray[left]) > 0) {
 
-                swap(heapArray[parent], heapArray[left]);
+                swap(parent, left, heapArray);
 
                 heapArray[parent].index = parent;
                 heapArray[left].index = left;
 
                 if (parent != 0)
-                    heapifyUpward((int) Math.floor((parent - 1) / 2));
+                    heapifyUp((parent - 1) / 2);
+            }
+        } else if ((heapArray[parent].compareTo(heapArray[left]) > 0)
+                || (heapArray[parent].compareTo(heapArray[right]) > 0)) {
 
+            if (heapArray[left].compareTo(heapArray[right]) < 0) {
+                swap(left, parent, heapArray);
+
+                heapArray[parent].index = parent;
+                heapArray[left].index = left;
             }
 
-            else if ((heapArray[parent].compareTo(heapArray[left]) > 0)
-                    || (heapArray[parent].compareTo(heapArray[right]) > 0)) {
+            else {
+                swap(right, parent, heapArray);
 
-                if (heapArray[left].compareTo(heapArray[right]) < 0) {
-                    swap(heapArray[left], heapArray[parent]);
-
-                    heapArray[parent].index = parent;
-                    heapArray[left].index = left;
-                }
-
-                else {
-                    swap(heapArray[right], heapArray[parent]);
-
-                    heapArray[parent].index = parent;
-                    heapArray[right].index = right;
-                }
-
-                if (parent != 0)
-                    heapifyUpward((int) Math.floor((parent - 1) / 2));
+                heapArray[parent].index = parent;
+                heapArray[right].index = right;
             }
 
-            else
-                return;
+            if (parent != 0)
+                heapifyUp((parent - 1) / 2);
         }
     }
 
@@ -71,10 +64,11 @@ public class GatorHeap {
         elementCount += 1;
 
         if (elementCount > 1)
-            heapifyUpward(parent);
+            heapifyUp(parent);
     }
 
-    void heapifyDownward(int parent) {
+    void heapifyDown(int parent) {
+
         int left = 2 * parent + 1;
         int right = 2 * parent + 2;
 
@@ -85,7 +79,7 @@ public class GatorHeap {
         // only left child
         if (left < elementCount && right >= elementCount) {
             if (heapArray[parent].compareTo(heapArray[left]) > 0) {
-                swap(heapArray[parent], heapArray[left]);
+                swap(parent, left, heapArray);
 
                 heapArray[parent].index = parent;
                 heapArray[left].index = left;
@@ -100,25 +94,26 @@ public class GatorHeap {
             return;
 
         else if (heapArray[left].compareTo(heapArray[right]) < 0) {
-            swap(heapArray[parent], heapArray[left]);
+            swap(left, parent, heapArray);
+            ;
 
             heapArray[left].index = left;
             heapArray[parent].index = parent;
 
-            heapifyDownward(left);
+            heapifyDown(left);
         }
 
         else {
-            swap(heapArray[parent], heapArray[right]);
+            swap(right, parent, heapArray);
 
-            heapArray[left].index = right;
+            heapArray[right].index = right;
             heapArray[parent].index = parent;
 
-            heapifyDownward(right);
+            heapifyDown(right);
         }
     }
 
-    HeapNode deleteMin() {
+    HeapNode deleteMinimum() {
         // no elements
         if (elementCount == 0)
             return null;
@@ -132,7 +127,7 @@ public class GatorHeap {
             heapArray[0].index = 0;
             elementCount--;
 
-            heapifyDownward(0);
+            heapifyDown(0);
         }
 
         // only one element
@@ -142,16 +137,16 @@ public class GatorHeap {
         return min;
     }
 
-    void updateNode(int newIndex, int newDuration) throws UnsupportedDurationRaiseEx {
-        HeapNode node = heapArray[newIndex];
+    void updateHeapNode(int index, int newDuration) throws UnsupportedDurationRaiseEx {
+        HeapNode node = heapArray[index];
 
         if (newDuration < node.tripDuration) {
             node.tripDuration = newDuration;
 
-            if (newIndex > 0) {
-                int parent = (int) Math.floor((newIndex - 1) / 2);
+            if (index > 0) {
+                int parent = (index - 1) / 2;
 
-                heapifyUpward(parent);
+                heapifyUp(parent);
             }
         }
 
@@ -159,7 +154,7 @@ public class GatorHeap {
             node.rideCost += 10;
             node.tripDuration = newDuration;
 
-            heapifyDownward(newIndex);
+            heapifyDown(index);
         }
 
         else {
@@ -176,7 +171,7 @@ public class GatorHeap {
             heapArray[node.index] = heapArray[elementCount - 1];
             heapArray[node.index].index = node.index;
             elementCount--;
-            heapifyDownward(node.index);
+            heapifyDown(node.index);
         }
 
         return node;

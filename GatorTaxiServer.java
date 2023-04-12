@@ -9,12 +9,12 @@ public class GatorTaxiServer {
         rbTree = new GatorRBTree();
     }
 
-    void insert(int rideNumber, int rideCost, int tripDuration) {
+    boolean insert(int rideNumber, int rideCost, int tripDuration) {
+
         RedBlackTreeNode node = rbTree.search(rideNumber);
 
         if (node != null) {
-            System.out.println("Duplicate ride number");
-            System.exit(0);
+            return false;
         }
 
         HeapNode hNode = new HeapNode(rideNumber, rideCost, tripDuration);
@@ -25,15 +25,22 @@ public class GatorTaxiServer {
 
         hNode.rBTPtr = rNode;
         rNode.heapNodePtr = hNode;
+
+        return true;
     }
 
     HeapNode getNextRide() {
-        HeapNode hNode = minHeap.deleteMin();
-        RedBlackTreeNode rNode = hNode.rBTPtr;
+        HeapNode hNode = minHeap.deleteMinimum();
 
-        rbTree.delete(rNode);
+        if (hNode == null) {
+            return null;
+        } else {
+            RedBlackTreeNode rNode = hNode.rBTPtr;
 
-        return hNode;
+            rbTree.delete(rNode);
+
+            return hNode;
+        }
     }
 
     RedBlackTreeNode print(int rideNumber) {
@@ -46,7 +53,7 @@ public class GatorTaxiServer {
     }
 
     List<RedBlackTreeNode> print(int low, int high) {
-        return rbTree.getAllInRange(low, high);
+        return rbTree.getValuesInRange(low, high);
     }
 
     void updateTrip(int rideNumber, int updatedTripDuration) {
@@ -59,7 +66,7 @@ public class GatorTaxiServer {
         int hIndex = hNode.index;
 
         try {
-            minHeap.updateNode(hIndex, updatedTripDuration);
+            minHeap.updateHeapNode(hIndex, updatedTripDuration);
             rNode.rideCost = hNode.rideCost;
             rNode.tripDuration = hNode.tripDuration;
         } catch (UnsupportedDurationRaiseEx e) {
