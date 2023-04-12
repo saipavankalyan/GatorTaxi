@@ -4,10 +4,13 @@ import java.util.List;
 public class GatorRBTree {
     RedBlackTreeNode root;
 
+    // Constructor
     public GatorRBTree() {
         root = null;
     }
 
+    // Just insert the node following the rules of binary search tree without
+    // checking balance conditions
     RedBlackTreeNode insertPreBalancing(RedBlackTreeNode root, RedBlackTreeNode newNode) {
         if (root == null)
             return newNode;
@@ -25,6 +28,8 @@ public class GatorRBTree {
         return root;
     }
 
+    // Rebalancing will be done through change of color to satisfy the properties of
+    // red black tree
     void handleColorChange(RedBlackTreeNode grandParent, RedBlackTreeNode uncle, RedBlackTreeNode parent) {
         grandParent.isRed = !grandParent.isRed;
         uncle.isRed = !uncle.isRed;
@@ -33,6 +38,7 @@ public class GatorRBTree {
         handleInsertWithBalance(grandParent);
     }
 
+    // rotate in clock-wise direction
     void rotateLeft(RedBlackTreeNode node) {
         RedBlackTreeNode right = node.right;
         node.right = right.left;
@@ -55,6 +61,7 @@ public class GatorRBTree {
         node.parent = right;
     }
 
+    // rotate in anti-clockwise direction
     void rotateRight(RedBlackTreeNode node) {
         RedBlackTreeNode left = node.left;
         node.left = left.right;
@@ -76,6 +83,7 @@ public class GatorRBTree {
         node.parent = left;
     }
 
+    // balance the tree when the imbalance is in LXB form
     void balanceLeftX(RedBlackTreeNode node, RedBlackTreeNode parent, RedBlackTreeNode grandParent) {
         if (!node.isLeftChild())
             rotateLeft(parent);
@@ -91,6 +99,7 @@ public class GatorRBTree {
             handleInsertWithBalance(grandParent);
     }
 
+    // balance the tree when the imbalance is in RXB form
     void balanceRightX(RedBlackTreeNode node, RedBlackTreeNode parent, RedBlackTreeNode grandParent) {
         if (node.isLeftChild())
             rotateRight(parent);
@@ -106,6 +115,7 @@ public class GatorRBTree {
             handleInsertWithBalance(grandParent);
     }
 
+    // Handles all kinds of imbalances after insertion of node
     void handleInsertWithBalance(RedBlackTreeNode node) {
         if (node == root)
             root.isRed = false;
@@ -140,15 +150,21 @@ public class GatorRBTree {
         }
     }
 
+    // Insertion of node into tree
     RedBlackTreeNode insert(RedBlackTreeNode node) {
+
+        // firt insert following binary search tree conditions
         root = insertPreBalancing(root, node);
 
+        // focus on balancing based on red black tree properties
         handleInsertWithBalance(node);
 
         return node;
     }
 
+    // recursively search a node with given ride number in the tree
     RedBlackTreeNode searchRecursive(RedBlackTreeNode node, int rideNumber) {
+        // If node with given rideNumber doesn't exist in the tree
         if (node == null)
             return null;
 
@@ -161,26 +177,32 @@ public class GatorRBTree {
             return searchRecursive(node.left, rideNumber);
     }
 
+    // searches node with given ridenumber in the tree
     RedBlackTreeNode search(int rideNumber) {
         return searchRecursive(root, rideNumber);
     }
 
+    // Inorder traversal of tree between the given values
     void getValuesInRangeRecursive(RedBlackTreeNode node, int low, int high, List<RedBlackTreeNode> acc) {
         if (node == null)
             return;
 
+        // If current node is greater than low, can search in left sub tree
         if (low <= node.rideNumber)
             getValuesInRangeRecursive(node.left, low, high, acc);
 
+        // If node is in the given range, add to the output
         if (node.rideNumber >= low && node.rideNumber <= high)
             acc.add(node);
 
         else if (node.rideNumber > high)
             return;
 
+        // If current node is within the range, explore it's right sub tree as well
         getValuesInRangeRecursive(node.right, low, high, acc);
     }
 
+    // Wrapper function to call the above function
     List<RedBlackTreeNode> getValuesInRange(int low, int high) {
         List<RedBlackTreeNode> acc = new ArrayList<>();
 
@@ -189,6 +211,7 @@ public class GatorRBTree {
         return acc;
     }
 
+    // Find minimum by traversing to the left most node of the tree
     RedBlackTreeNode findMinimum(RedBlackTreeNode node) {
         RedBlackTreeNode curr = node;
 
@@ -198,6 +221,7 @@ public class GatorRBTree {
         return curr;
     }
 
+    // Returns the sibling of the given node
     RedBlackTreeNode getSibling(RedBlackTreeNode node) {
         RedBlackTreeNode parent = node.parent;
 
@@ -207,6 +231,7 @@ public class GatorRBTree {
             return parent.left;
     }
 
+    // Handles when 2 blacks are generated through deletion
     void handleDbAfterDeletion(RedBlackTreeNode node) {
         if (node.parent == null) {
             node.isDblack = false;
@@ -297,6 +322,7 @@ public class GatorRBTree {
         }
     }
 
+    // deletes the node by cutting the link between it and it's parent
     void deleteNode(RedBlackTreeNode node) {
         if (node.parent == null)
             root = null;
